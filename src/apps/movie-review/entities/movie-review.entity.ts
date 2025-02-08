@@ -8,4 +8,16 @@ export class MovieReviewEntity extends BaseEntity<MovieReviewEntity> {
 
   @Column()
   notes: string;
+
+  @Column()
+  released: string;
+
+  @Column()
+  imdbRating: string;
+
+  @Column()
+  year: string;
+
+  @Column()
+  genres: string;
 }

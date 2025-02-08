@@ -12,7 +12,7 @@ export class CreateMovieReviewDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @MinLength(10)
+  @MinLength(3)
   @MaxLength(255)
   notes: string;
 }

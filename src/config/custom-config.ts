@@ -29,3 +29,8 @@ const databaseTest = {
 export const databaseConfig = registerAs('database', () =>
   apiConfig().nodeEnv === 'test' ? databaseTest : database,
 );
+
+export const omdbApiConfig = registerAs('omdbApi', () => ({
+  url: process.env.OMDB_API_URL,
+  apiKey: process.env.OMDB_API_KEY,
+}));

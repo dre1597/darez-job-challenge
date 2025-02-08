@@ -8,7 +8,7 @@ import {
   IsString,
   validateSync,
 } from 'class-validator';
-import { apiConfig, databaseConfig } from './custom-config';
+import { apiConfig, databaseConfig, omdbApiConfig } from './custom-config';
 
 export class ConfigValidationDto {
   @IsOptional()
@@ -74,12 +74,20 @@ export class ConfigValidationDto {
   @IsOptional()
   @IsString()
   DATABASE_MIGRATIONS_RUN_TEST?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  OMDB_API_URL: string;
+
+  @IsNotEmpty()
+  @IsString()
+  OMDB_API_KEY: string;
 }
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      load: [apiConfig, databaseConfig],
+      load: [apiConfig, databaseConfig, omdbApiConfig],
       isGlobal: true,
       envFilePath: '.env',
       validate: (config: Record<string, any>) => {
