@@ -14,6 +14,10 @@ export class MovieReviewService {
     private readonly omdbService: OmdbService,
   ) {}
 
+  async findAll() {
+    return this.movieReviewRepository.find();
+  }
+
   async create(dto: CreateMovieReviewDto) {
     const alreadyExists = await this.movieReviewRepository.findOne({
       where: { title: dto.title },

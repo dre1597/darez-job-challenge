@@ -15,6 +15,11 @@ import { MovieReviewService } from './movie-review.service';
 export class MovieReviewController {
   constructor(private readonly movieService: MovieReviewService) {}
 
+  @Get()
+  findAll() {
+    return this.movieService.findAll();
+  }
+
   @Post()
   create(@Body() dto: CreateMovieReviewDto) {
     return this.movieService.create(dto);

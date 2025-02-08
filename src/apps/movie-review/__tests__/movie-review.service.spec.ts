@@ -32,6 +32,12 @@ describe('MovieReviewService', () => {
     repository = module.get(MovieReviewRepository);
   });
 
+  describe('findAll', () => {
+    it('should return an array of movie reviews', async () => {
+      expect(await service.findAll()).toEqual([defaultReturn]);
+    });
+  });
+
   describe('create', () => {
     it('should create a movie review', async () => {
       const dto = {

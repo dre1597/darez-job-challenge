@@ -1,5 +1,10 @@
 import { INestApplication } from '@nestjs/common';
-import { DeepPartial, FindOneOptions, SaveOptions } from 'typeorm';
+import {
+  DeepPartial,
+  FindManyOptions,
+  FindOneOptions,
+  SaveOptions,
+} from 'typeorm';
 import { MovieReviewEntity } from '../../entities/movie-review.entity';
 import { MovieReviewRepository } from '../../repositories/movie-review.repository';
 
@@ -14,6 +19,10 @@ export const defaultReturn = {
 } as unknown as MovieReviewEntity;
 
 export class MockMovieReviewRepository {
+  find(options?: FindManyOptions<MovieReviewEntity>) {
+    return Promise.resolve([defaultReturn]);
+  }
+
   findOne(
     options: FindOneOptions<MovieReviewEntity>,
   ): Promise<typeof defaultReturn | null> {

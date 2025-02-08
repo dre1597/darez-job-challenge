@@ -37,6 +37,17 @@ describe('MovieReviewController (e2e)', () => {
     await app.close();
   });
 
+  describe('/movies-reviews (GET)', () => {
+    it('should return an array of movie reviews', async () => {
+      await createMovieReviewMock(app);
+
+      const response = await request(app.getHttpServer()).get('/movie-reviews');
+
+      expect(response.status).toBe(HttpStatus.OK);
+      expect(response.body).toMatchObject([defaultReturn]);
+    });
+  });
+
   describe('/movies-reviews (POST)', () => {
     it('should create a movie review', async () => {
       const dto: CreateMovieReviewDto = {
