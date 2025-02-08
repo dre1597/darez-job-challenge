@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { formatOMDBDateToISO } from '../../common/helpers/format-date.helper';
 import { OmdbService } from '../omdb/omdb.service';
 import { CreateMovieReviewDto } from './dto/create-movie-review.dto';
 import { FilterMovieReviewDto } from './dto/filter-movie-review.dto';
@@ -35,9 +36,8 @@ export class MovieReviewService {
     const movie = this.movieReviewRepository.create({
       ...dto,
       title: movieDetails.Title,
-      released: movieDetails.Released,
-      imdbRating: movieDetails.imdbRating,
-      year: movieDetails.Year,
+      released: formatOMDBDateToISO(movieDetails.Released),
+      imdbRating: Number(movieDetails.imdbRating),
       genres: movieDetails.Genre,
     });
 

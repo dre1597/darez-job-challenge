@@ -38,14 +38,23 @@ describe('MovieReviewController (e2e)', () => {
   });
 
   describe('/movies-reviews (GET)', () => {
-    it('should return an array of movie reviews', async () => {
-      await createMovieReviewMock(app);
+    it('should return a paginated array of movie reviews', async () => {
+      const movieReview = await createMovieReviewMock(app);
 
       const response = await request(app.getHttpServer()).get('/movie-reviews');
 
       expect(response.status).toBe(HttpStatus.OK);
       expect(response.body).toMatchObject({
-        data: [defaultReturn],
+        data: [
+          {
+            id: movieReview.id,
+            title: movieReview.title,
+            notes: movieReview.notes,
+            released: movieReview.released,
+            imdbRating: movieReview.imdbRating,
+            genres: movieReview.genres,
+          },
+        ],
         pagination: {
           currentPage: 1,
           perPage: 10,
@@ -147,7 +156,6 @@ describe('MovieReviewController (e2e)', () => {
         notes: movieReview.notes,
         released: movieReview.released,
         imdbRating: movieReview.imdbRating,
-        year: movieReview.year,
         genres: movieReview.genres,
       });
     });

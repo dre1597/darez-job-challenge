@@ -13,10 +13,7 @@ export class MovieReviewEntity extends BaseEntity<MovieReviewEntity> {
   released: string;
 
   @Column()
-  imdbRating: string;
-
-  @Column()
-  year: string;
+  imdbRating: number;
 
   @Column()
   genres: string;

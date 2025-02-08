@@ -8,9 +8,8 @@ export const defaultReturn = {
   id: 1,
   title: 'Test',
   notes: 'Test',
-  released: 'Test',
-  imdbRating: 'Test',
-  year: 'Test',
+  released: '2025-01-01',
+  imdbRating: 10,
   genres: 'Test',
 } as unknown as MovieReviewEntity;
 
@@ -47,9 +46,8 @@ export class MockOmdbService {
   getMovieDetails(title: string) {
     return {
       Title: 'Test',
-      Released: 'Test',
-      imdbRating: 'Test',
-      Year: 'Test',
+      Released: '01 Jan 2025',
+      imdbRating: 10,
       Genre: 'Test',
     };
   }
@@ -61,9 +59,8 @@ export const createMovieReviewMock = async (app: INestApplication) => {
   const movieReview = movieReviewRepository.create({
     title: 'Test',
     notes: 'Test',
-    released: 'Test',
-    imdbRating: 'Test',
-    year: 'Test',
+    released: '2025-01-01',
+    imdbRating: 10,
     genres: 'Test',
   });
 
