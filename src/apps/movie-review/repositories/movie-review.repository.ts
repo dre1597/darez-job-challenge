@@ -15,20 +15,21 @@ export class MovieReviewRepository extends BaseRepository<MovieReviewEntity> {
   }
 
   findAll(dto: FilterMovieReviewDto) {
-    const { page = 1, perPage = 10 } = dto;
+    const { page = 1, perPage = 10, title = '', sortDirection, sortBy } = dto;
 
     const query = this.repository
       .createQueryBuilder('movieReview')
+      .where('movieReview.title ILIKE :title', { title: `%${title}%` })
       .select([
         'movieReview.id',
         'movieReview.title',
         'movieReview.notes',
         'movieReview.released',
         'movieReview.imdbRating',
-        'movieReview.year',
         'movieReview.genres',
         'movieReview.createdAt',
-      ]);
+      ])
+      .orderBy(`movieReview.${sortBy}`, sortDirection);
 
     return paginate(query, page, perPage);
   }

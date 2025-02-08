@@ -6,11 +6,11 @@ import { MovieReviewRepository } from '../../repositories/movie-review.repositor
 
 export const defaultReturn = {
   id: 1,
-  title: 'Test',
-  notes: 'Test',
+  title: 'any_title',
+  notes: 'any_notes',
   released: '2025-01-01',
   imdbRating: 10,
-  genres: 'Test',
+  genres: 'any_genres',
 } as unknown as MovieReviewEntity;
 
 export class MockMovieReviewRepository {
@@ -45,24 +45,27 @@ export class MockMovieReviewRepository {
 export class MockOmdbService {
   getMovieDetails(title: string) {
     return {
-      Title: 'Test',
+      Title: 'any_title',
       Released: '01 Jan 2025',
       imdbRating: 10,
-      Genre: 'Test',
+      Genre: 'any_genres',
     };
   }
 }
 
-export const createMovieReviewMock = async (app: INestApplication) => {
-  const movieReviewRepository = app.get(MovieReviewRepository);
-
-  const movieReview = movieReviewRepository.create({
-    title: 'Test',
-    notes: 'Test',
+export const createMovieReviewMock = async (
+  app: INestApplication,
+  entity: DeepPartial<MovieReviewEntity> = {
+    title: 'any_test',
+    notes: 'any_notes',
     released: '2025-01-01',
     imdbRating: 10,
-    genres: 'Test',
-  });
+    genres: 'any_genres',
+  },
+) => {
+  const movieReviewRepository = app.get(MovieReviewRepository);
+
+  const movieReview = movieReviewRepository.create(entity);
 
   return movieReviewRepository.save(movieReview);
 };

@@ -64,13 +64,105 @@ describe('MovieReviewController (e2e)', () => {
         },
       });
     });
+
+    it('should filter results by title', async () => {
+      await createMovieReviewMock(app, {
+        title: 'any_title',
+        notes: 'any_notes',
+        released: '2025-01-01',
+        imdbRating: 10,
+        genres: 'any_genres',
+      });
+      const movieReview = await createMovieReviewMock(app, {
+        title: 'another_title',
+        notes: 'any_notes',
+        released: '2025-01-01',
+        imdbRating: 10,
+        genres: 'any_genres',
+      });
+
+      const response = await request(app.getHttpServer()).get(
+        '/movie-reviews?title=another',
+      );
+
+      expect(response.status).toBe(HttpStatus.OK);
+      expect(response.body).toMatchObject({
+        data: [
+          {
+            id: movieReview.id,
+            title: movieReview.title,
+            notes: movieReview.notes,
+            released: movieReview.released,
+            imdbRating: movieReview.imdbRating,
+            genres: movieReview.genres,
+          },
+        ],
+        pagination: {
+          currentPage: 1,
+          perPage: 10,
+          totalItems: 1,
+          previousPage: null,
+          nextPage: null,
+        },
+      });
+    });
+
+    it('should sort results by released date in descending order', async () => {
+      const movieReview = await createMovieReviewMock(app, {
+        title: 'any_title',
+        notes: 'any_notes',
+        released: '2025-01-01',
+        imdbRating: 10,
+        genres: 'any_genres',
+      });
+      const anotherMovieReview = await createMovieReviewMock(app, {
+        title: 'another_title',
+        notes: 'any_notes',
+        released: '2020-01-01',
+        imdbRating: 10,
+        genres: 'any_genres',
+      });
+
+      const response = await request(app.getHttpServer()).get(
+        '/movie-reviews?sortBy=released&sortDirection=DESC',
+      );
+
+      expect(response.status).toBe(HttpStatus.OK);
+      expect(response.body).toMatchObject({
+        data: [
+          {
+            id: movieReview.id,
+            title: movieReview.title,
+            notes: movieReview.notes,
+            released: movieReview.released,
+            imdbRating: movieReview.imdbRating,
+            genres: movieReview.genres,
+          },
+          {
+            id: anotherMovieReview.id,
+            title: anotherMovieReview.title,
+            notes: anotherMovieReview.notes,
+            released: anotherMovieReview.released,
+            imdbRating: anotherMovieReview.imdbRating,
+            genres: anotherMovieReview.genres,
+          },
+        ],
+        pagination: {
+          currentPage: 1,
+          perPage: 10,
+          totalItems: 2,
+          previousPage: null,
+          nextPage: null,
+        },
+      });
+    });
   });
 
   describe('/movies-reviews (POST)', () => {
     it('should create a movie review', async () => {
       const dto: CreateMovieReviewDto = {
-        title: 'Test',
-        notes: 'Test',
+        title: 'any_title',
+        notes: 'any_notes',
       };
 
       const response = await request(app.getHttpServer())
@@ -83,8 +175,8 @@ describe('MovieReviewController (e2e)', () => {
 
     it('should not create a movie review with duplicate title', async () => {
       const dto: CreateMovieReviewDto = {
-        title: 'Test',
-        notes: 'Test',
+        title: 'any_title',
+        notes: 'any_notes',
       };
 
       await request(app.getHttpServer()).post('/movie-reviews').send(dto);
@@ -104,7 +196,7 @@ describe('MovieReviewController (e2e)', () => {
     it('should validate create movie review dto', async () => {
       let dto: CreateMovieReviewDto = {
         title: '',
-        notes: 'Test',
+        notes: 'any_notes',
       };
 
       let response = await request(app.getHttpServer())
@@ -122,7 +214,7 @@ describe('MovieReviewController (e2e)', () => {
       });
 
       dto = {
-        title: 'Test',
+        title: 'any_title',
         notes: '',
       };
 
