@@ -5,9 +5,11 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateMovieReviewDto } from './dto/create-movie-review.dto';
+import { FilterMovieReviewDto } from './dto/filter-movie-review.dto';
 import { MovieReviewService } from './movie-review.service';
 
 @ApiTags('Movie Review')
@@ -16,8 +18,8 @@ export class MovieReviewController {
   constructor(private readonly movieService: MovieReviewService) {}
 
   @Get()
-  findAll() {
-    return this.movieService.findAll();
+  findAll(@Query() dto: FilterMovieReviewDto) {
+    return this.movieService.findAll(dto);
   }
 
   @Post()

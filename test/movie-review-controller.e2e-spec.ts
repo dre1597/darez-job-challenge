@@ -44,7 +44,16 @@ describe('MovieReviewController (e2e)', () => {
       const response = await request(app.getHttpServer()).get('/movie-reviews');
 
       expect(response.status).toBe(HttpStatus.OK);
-      expect(response.body).toMatchObject([defaultReturn]);
+      expect(response.body).toMatchObject({
+        data: [defaultReturn],
+        pagination: {
+          currentPage: 1,
+          perPage: 10,
+          totalItems: 1,
+          previousPage: null,
+          nextPage: null,
+        },
+      });
     });
   });
 
@@ -93,9 +102,9 @@ describe('MovieReviewController (e2e)', () => {
         .post('/movie-reviews')
         .send(dto);
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       expect(response.body).toEqual({
-        statusCode: 400,
+        statusCode: HttpStatus.BAD_REQUEST,
         message: [
           'title must be longer than or equal to 3 characters',
           'title should not be empty',

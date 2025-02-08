@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { OmdbService } from '../omdb/omdb.service';
 import { CreateMovieReviewDto } from './dto/create-movie-review.dto';
+import { FilterMovieReviewDto } from './dto/filter-movie-review.dto';
 import { MovieReviewRepository } from './repositories/movie-review.repository';
 
 @Injectable()
@@ -14,8 +15,8 @@ export class MovieReviewService {
     private readonly omdbService: OmdbService,
   ) {}
 
-  async findAll() {
-    return this.movieReviewRepository.find();
+  findAll(dto: FilterMovieReviewDto) {
+    return this.movieReviewRepository.findAll(dto);
   }
 
   async create(dto: CreateMovieReviewDto) {

@@ -1,10 +1,6 @@
 import { INestApplication } from '@nestjs/common';
-import {
-  DeepPartial,
-  FindManyOptions,
-  FindOneOptions,
-  SaveOptions,
-} from 'typeorm';
+import { DeepPartial, FindOneOptions, SaveOptions } from 'typeorm';
+import { FilterMovieReviewDto } from '../../dto/filter-movie-review.dto';
 import { MovieReviewEntity } from '../../entities/movie-review.entity';
 import { MovieReviewRepository } from '../../repositories/movie-review.repository';
 
@@ -19,8 +15,17 @@ export const defaultReturn = {
 } as unknown as MovieReviewEntity;
 
 export class MockMovieReviewRepository {
-  find(options?: FindManyOptions<MovieReviewEntity>) {
-    return Promise.resolve([defaultReturn]);
+  findAll(dto: FilterMovieReviewDto) {
+    return Promise.resolve({
+      data: [defaultReturn],
+      pagination: {
+        currentPage: 1,
+        perPage: 10,
+        totalItems: 1,
+        previousPage: null,
+        nextPage: null,
+      },
+    });
   }
 
   findOne(

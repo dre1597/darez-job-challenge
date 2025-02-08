@@ -1,6 +1,7 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OmdbService } from '../../omdb/omdb.service';
+import { FilterMovieReviewDto } from '../dto/filter-movie-review.dto';
 import { MovieReviewService } from '../movie-review.service';
 import { MovieReviewRepository } from '../repositories/movie-review.repository';
 import {
@@ -34,7 +35,18 @@ describe('MovieReviewService', () => {
 
   describe('findAll', () => {
     it('should return an array of movie reviews', async () => {
-      expect(await service.findAll()).toEqual([defaultReturn]);
+      const dto: FilterMovieReviewDto = {};
+
+      expect(await service.findAll(dto)).toMatchObject({
+        data: [defaultReturn],
+        pagination: {
+          currentPage: 1,
+          perPage: 10,
+          totalItems: 1,
+          previousPage: null,
+          nextPage: null,
+        },
+      });
     });
   });
 
