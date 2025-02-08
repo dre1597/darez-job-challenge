@@ -20,7 +20,9 @@ export class MovieReviewService {
     });
 
     if (alreadyExists) {
-      throw new ConflictException('A movie with this title already exists');
+      throw new ConflictException(
+        'A movie review with this title already exists',
+      );
     }
 
     const movieDetails = await this.omdbService.getMovieDetails(dto.title);

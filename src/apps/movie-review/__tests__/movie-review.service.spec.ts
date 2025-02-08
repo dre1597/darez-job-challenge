@@ -53,7 +53,7 @@ describe('MovieReviewService', () => {
       };
 
       await expect(service.create(dto)).rejects.toThrow(
-        new ConflictException('A movie with this title already exists'),
+        new ConflictException('A movie review with this title already exists'),
       );
     });
   });

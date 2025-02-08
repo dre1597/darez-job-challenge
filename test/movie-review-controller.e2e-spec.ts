@@ -48,7 +48,7 @@ describe('MovieReviewController (e2e)', () => {
         .post('/movie-reviews')
         .send(dto);
 
-      expect(response.status).toBe(201);
+      expect(response.status).toBe(HttpStatus.CREATED);
       expect(response.body).toMatchObject(defaultReturn);
     });
 
@@ -64,10 +64,10 @@ describe('MovieReviewController (e2e)', () => {
         .post('/movie-reviews')
         .send(dto);
 
-      expect(response.status).toBe(409);
+      expect(response.status).toBe(HttpStatus.CONFLICT);
       expect(response.body).toEqual({
-        statusCode: 409,
-        message: 'A movie with this title already exists',
+        statusCode: HttpStatus.CONFLICT,
+        message: 'A movie review with this title already exists',
         error: 'Conflict',
       });
     });
