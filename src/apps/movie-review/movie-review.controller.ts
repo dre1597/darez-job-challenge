@@ -1,4 +1,11 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateMovieReviewDto } from './dto/create-movie-review.dto';
 import { MovieReviewService } from './movie-review.service';
@@ -11,5 +18,10 @@ export class MovieReviewController {
   @Post()
   create(@Body() dto: CreateMovieReviewDto) {
     return this.movieService.create(dto);
+  }
+
+  @Get(':id')
+  findOne(@Param('id', new ParseIntPipe()) id: number) {
+    return this.movieService.findOne(id);
   }
 }

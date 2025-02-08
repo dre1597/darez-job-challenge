@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { OmdbService } from '../omdb/omdb.service';
 import { CreateMovieReviewDto } from './dto/create-movie-review.dto';
 import { MovieReviewRepository } from './repositories/movie-review.repository';
@@ -6,12 +10,12 @@ import { MovieReviewRepository } from './repositories/movie-review.repository';
 @Injectable()
 export class MovieReviewService {
   constructor(
-    private readonly movieRepository: MovieReviewRepository,
+    private readonly movieReviewRepository: MovieReviewRepository,
     private readonly omdbService: OmdbService,
   ) {}
 
   async create(dto: CreateMovieReviewDto) {
-    const alreadyExists = await this.movieRepository.findOne({
+    const alreadyExists = await this.movieReviewRepository.findOne({
       where: { title: dto.title },
     });
 
@@ -21,7 +25,7 @@ export class MovieReviewService {
 
     const movieDetails = await this.omdbService.getMovieDetails(dto.title);
 
-    const movie = this.movieRepository.create({
+    const movie = this.movieReviewRepository.create({
       ...dto,
       title: movieDetails.Title,
       released: movieDetails.Released,
@@ -30,6 +34,18 @@ export class MovieReviewService {
       genres: movieDetails.Genre,
     });
 
-    return this.movieRepository.save(movie);
+    return this.movieReviewRepository.save(movie);
+  }
+
+  async findOne(id: number) {
+    const movieReview = await this.movieReviewRepository.findOne({
+      where: { id },
+    });
+
+    if (!movieReview) {
+      throw new NotFoundException('Movie review not found');
+    }
+
+    return movieReview;
   }
 }

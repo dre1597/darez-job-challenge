@@ -1,9 +1,10 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import {
+  createMovieReviewMock,
   defaultReturn,
   MockOmdbService,
 } from '../src/apps/movie-review/__tests__/mocks';
@@ -108,6 +109,39 @@ describe('MovieReviewController (e2e)', () => {
           'notes should not be empty',
         ],
         error: 'Bad Request',
+      });
+    });
+  });
+
+  describe('/movies-reviews/:id (GET)', () => {
+    it('should find a movie review', async () => {
+      const movieReview = await createMovieReviewMock(app);
+      const response = await request(app.getHttpServer()).get(
+        `/movie-reviews/${movieReview.id}`,
+      );
+
+      expect(response.status).toBe(HttpStatus.OK);
+      expect(response.body).toMatchObject({
+        id: movieReview.id,
+        title: movieReview.title,
+        notes: movieReview.notes,
+        released: movieReview.released,
+        imdbRating: movieReview.imdbRating,
+        year: movieReview.year,
+        genres: movieReview.genres,
+      });
+    });
+
+    it('should not find a movie review if not found', async () => {
+      const response = await request(app.getHttpServer()).get(
+        '/movie-reviews/1',
+      );
+
+      expect(response.status).toBe(HttpStatus.NOT_FOUND);
+      expect(response.body).toEqual({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'Movie review not found',
+        error: 'Not Found',
       });
     });
   });

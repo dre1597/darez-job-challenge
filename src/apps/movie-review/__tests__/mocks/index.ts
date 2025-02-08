@@ -1,5 +1,7 @@
+import { INestApplication } from '@nestjs/common';
 import { DeepPartial, FindOneOptions, SaveOptions } from 'typeorm';
 import { MovieReviewEntity } from '../../entities/movie-review.entity';
+import { MovieReviewRepository } from '../../repositories/movie-review.repository';
 
 export const defaultReturn = {
   id: 1,
@@ -38,3 +40,18 @@ export class MockOmdbService {
     };
   }
 }
+
+export const createMovieReviewMock = async (app: INestApplication) => {
+  const movieReviewRepository = app.get(MovieReviewRepository);
+
+  const movieReview = movieReviewRepository.create({
+    title: 'Test',
+    notes: 'Test',
+    released: 'Test',
+    imdbRating: 'Test',
+    year: 'Test',
+    genres: 'Test',
+  });
+
+  return movieReviewRepository.save(movieReview);
+};

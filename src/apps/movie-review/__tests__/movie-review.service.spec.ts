@@ -1,4 +1,4 @@
-import { ConflictException } from '@nestjs/common';
+import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OmdbService } from '../../omdb/omdb.service';
 import { MovieReviewService } from '../movie-review.service';
@@ -54,6 +54,22 @@ describe('MovieReviewService', () => {
 
       await expect(service.create(dto)).rejects.toThrow(
         new ConflictException('A movie with this title already exists'),
+      );
+    });
+  });
+
+  describe('findOne', () => {
+    it('should find a movie review', async () => {
+      jest
+        .spyOn(repository, 'findOne')
+        .mockReturnValue(Promise.resolve(defaultReturn));
+
+      expect(await service.findOne(1)).toEqual(defaultReturn);
+    });
+
+    it('should not find a movie review if not found', async () => {
+      await expect(service.findOne(1)).rejects.toThrow(
+        new NotFoundException('Movie review not found'),
       );
     });
   });
