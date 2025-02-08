@@ -112,9 +112,9 @@ describe('MovieReviewController (e2e)', () => {
         .post('/movie-reviews')
         .send(dto);
 
-      expect(response.status).toBe(400);
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
       expect(response.body).toEqual({
-        statusCode: 400,
+        statusCode: HttpStatus.BAD_REQUEST,
         message: [
           'notes must be longer than or equal to 3 characters',
           'notes should not be empty',
