@@ -15,9 +15,26 @@ services:
     networks:
       - job-challenge
 
+  postgres-test:
+    env_file:
+      - .env
+    image: postgres:16
+    ports:
+      - ${DATABASE_PORT_TEST:-15432}:${DATABASE_PORT_TEST:-15432}
+    volumes:
+      - data-postgres-test:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DATABASE_USER_TEST:-postgres}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD_TEST:-postgres}
+      POSTGRES_DB: ${DATABASE_NAME_TEST:-job_challenge_db_test}
+    command: -p ${DATABASE_PORT_TEST:-15432}
+    networks:
+      - job-challenge
+
 volumes:
   data-postgres:
     driver: local
-
+  data-postgres-test:
+    driver: local
 networks:
   job-challenge:

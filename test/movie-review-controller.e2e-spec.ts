@@ -1,0 +1,114 @@
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as request from 'supertest';
+import { App } from 'supertest/types';
+import { AppModule } from '../src/app.module';
+import {
+  defaultReturn,
+  MockOmdbService,
+} from '../src/apps/movie-review/__tests__/mocks';
+import { CreateMovieReviewDto } from '../src/apps/movie-review/dto/create-movie-review.dto';
+import { OmdbService } from '../src/apps/omdb/omdb.service';
+
+describe('MovieReviewController (e2e)', () => {
+  let app: INestApplication<App>;
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    })
+      .overrideProvider(OmdbService)
+      .useClass(MockOmdbService)
+      .compile();
+
+    app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+      }),
+    );
+    await app.init();
+  });
+
+  afterEach(async () => {
+    jest.clearAllMocks();
+    await app.close();
+  });
+
+  describe('/movies-reviews (POST)', () => {
+    it('should create a movie review', async () => {
+      const dto: CreateMovieReviewDto = {
+        title: 'Test',
+        notes: 'Test',
+      };
+
+      const response = await request(app.getHttpServer())
+        .post('/movie-reviews')
+        .send(dto);
+
+      expect(response.status).toBe(201);
+      expect(response.body).toMatchObject(defaultReturn);
+    });
+
+    it('should not create a movie review with duplicate title', async () => {
+      const dto: CreateMovieReviewDto = {
+        title: 'Test',
+        notes: 'Test',
+      };
+
+      await request(app.getHttpServer()).post('/movie-reviews').send(dto);
+
+      const response = await request(app.getHttpServer())
+        .post('/movie-reviews')
+        .send(dto);
+
+      expect(response.status).toBe(409);
+      expect(response.body).toEqual({
+        statusCode: 409,
+        message: 'A movie with this title already exists',
+        error: 'Conflict',
+      });
+    });
+
+    it('should validate create movie review dto', async () => {
+      let dto: CreateMovieReviewDto = {
+        title: '',
+        notes: 'Test',
+      };
+
+      let response = await request(app.getHttpServer())
+        .post('/movie-reviews')
+        .send(dto);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        statusCode: 400,
+        message: [
+          'title must be longer than or equal to 3 characters',
+          'title should not be empty',
+        ],
+        error: 'Bad Request',
+      });
+
+      dto = {
+        title: 'Test',
+        notes: '',
+      };
+
+      response = await request(app.getHttpServer())
+        .post('/movie-reviews')
+        .send(dto);
+
+      expect(response.status).toBe(400);
+      expect(response.body).toEqual({
+        statusCode: 400,
+        message: [
+          'notes must be longer than or equal to 3 characters',
+          'notes should not be empty',
+        ],
+        error: 'Bad Request',
+      });
+    });
+  });
+});
