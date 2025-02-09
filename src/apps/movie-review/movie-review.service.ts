@@ -77,4 +77,14 @@ export class MovieReviewService {
       ...dto,
     });
   }
+
+  async remove(id: number) {
+    const movieReview = await this.movieReviewRepository.findOne({
+      where: { id },
+    });
+
+    if (movieReview) {
+      await this.movieReviewRepository.remove(movieReview);
+    }
+  }
 }

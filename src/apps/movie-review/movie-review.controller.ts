@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -40,5 +41,10 @@ export class MovieReviewController {
     @Body() dto: UpdateMovieReviewDto,
   ) {
     return this.movieService.update(id, dto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id', new ParseIntPipe()) id: number) {
+    return this.movieService.remove(id);
   }
 }

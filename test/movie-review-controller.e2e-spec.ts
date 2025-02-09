@@ -457,4 +457,26 @@ describe('MovieReviewController (e2e)', () => {
       });
     });
   });
+
+  describe('/movies-reviews/:id (DELETE)', () => {
+    it('should delete a movie review', async () => {
+      const movieReview = await createMovieReviewMock(app);
+
+      const response = await request(app.getHttpServer()).delete(
+        `/movie-reviews/${movieReview.id}`,
+      );
+
+      expect(response.status).toBe(HttpStatus.OK);
+      expect(response.body).toEqual({});
+    });
+
+    it('should return undefined if not found', async () => {
+      const response = await request(app.getHttpServer()).delete(
+        '/movie-reviews/0',
+      );
+
+      expect(response.status).toBe(HttpStatus.OK);
+      expect(response.body).toEqual({});
+    });
+  });
 });

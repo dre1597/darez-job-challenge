@@ -1,5 +1,10 @@
 import { INestApplication } from '@nestjs/common';
-import { DeepPartial, FindOneOptions, SaveOptions } from 'typeorm';
+import {
+  DeepPartial,
+  FindOneOptions,
+  RemoveOptions,
+  SaveOptions,
+} from 'typeorm';
 import { FilterMovieReviewDto } from '../../dto/filter-movie-review.dto';
 import { MovieReviewEntity } from '../../entities/movie-review.entity';
 import { MovieReviewRepository } from '../../repositories/movie-review.repository';
@@ -39,6 +44,10 @@ export class MockMovieReviewRepository {
 
   save(entity: MovieReviewEntity, options?: SaveOptions) {
     return Promise.resolve(defaultReturn);
+  }
+
+  remove(entity: MovieReviewEntity, options?: RemoveOptions) {
+    return Promise.resolve();
   }
 }
 

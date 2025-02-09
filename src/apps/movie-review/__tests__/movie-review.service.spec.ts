@@ -113,4 +113,18 @@ describe('MovieReviewService', () => {
       );
     });
   });
+
+  describe('remove', () => {
+    it('should remove a movie review', async () => {
+      jest
+        .spyOn(repository, 'findOne')
+        .mockReturnValueOnce(Promise.resolve(defaultReturn));
+
+      expect(await service.remove(1)).toBeUndefined();
+    });
+
+    it('should return nothing if movie review not found', async () => {
+      expect(await service.remove(1)).toBeUndefined();
+    });
+  });
 });
