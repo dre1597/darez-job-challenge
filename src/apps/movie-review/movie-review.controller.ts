@@ -4,12 +4,14 @@ import {
   Get,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateMovieReviewDto } from './dto/create-movie-review.dto';
 import { FilterMovieReviewDto } from './dto/filter-movie-review.dto';
+import { UpdateMovieReviewDto } from './dto/update-movie-review.dto';
 import { MovieReviewService } from './movie-review.service';
 
 @ApiTags('Movie Review')
@@ -30,5 +32,13 @@ export class MovieReviewController {
   @Get(':id')
   findOne(@Param('id', new ParseIntPipe()) id: number) {
     return this.movieService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id', new ParseIntPipe()) id: number,
+    @Body() dto: UpdateMovieReviewDto,
+  ) {
+    return this.movieService.update(id, dto);
   }
 }

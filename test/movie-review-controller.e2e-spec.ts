@@ -9,6 +9,7 @@ import {
   MockOmdbService,
 } from '../src/apps/movie-review/__tests__/mocks';
 import { CreateMovieReviewDto } from '../src/apps/movie-review/dto/create-movie-review.dto';
+import { UpdateMovieReviewDto } from '../src/apps/movie-review/dto/update-movie-review.dto';
 import { OmdbService } from '../src/apps/omdb/omdb.service';
 
 describe('MovieReviewController (e2e)', () => {
@@ -193,7 +194,7 @@ describe('MovieReviewController (e2e)', () => {
       });
     });
 
-    it('should validate create movie review dto', async () => {
+    it('should validate create movie review fields', async () => {
       let dto: CreateMovieReviewDto = {
         title: '',
         notes: 'any_notes',
@@ -262,6 +263,197 @@ describe('MovieReviewController (e2e)', () => {
         statusCode: HttpStatus.NOT_FOUND,
         message: 'Movie review not found',
         error: 'Not Found',
+      });
+    });
+  });
+
+  describe('/movies-reviews/:id (PATCH)', () => {
+    it('should update a movie review', async () => {
+      const movieReview = await createMovieReviewMock(app);
+
+      const dto: UpdateMovieReviewDto = {
+        title: 'updated_title',
+        notes: 'updated_notes',
+        released: '2025-02-08',
+        imdbRating: 5,
+        genres: 'updated_genres',
+      };
+
+      const response = await request(app.getHttpServer())
+        .patch(`/movie-reviews/${movieReview.id}`)
+        .send(dto);
+
+      expect(response.status).toBe(HttpStatus.OK);
+      expect(response.body).toMatchObject({
+        id: movieReview.id,
+        title: dto.title,
+        notes: dto.notes,
+        released: dto.released,
+        imdbRating: dto.imdbRating,
+        genres: dto.genres,
+      });
+    });
+
+    it('should not update a movie review if not found', async () => {
+      const dto: UpdateMovieReviewDto = {
+        title: 'updated_title',
+      };
+
+      const response = await request(app.getHttpServer())
+        .patch('/movie-reviews/0')
+        .send(dto);
+
+      expect(response.status).toBe(HttpStatus.NOT_FOUND);
+      expect(response.body).toEqual({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: 'Movie review not found',
+        error: 'Not Found',
+      });
+    });
+
+    it('should not update a movie review with duplicate title', async () => {
+      const movieReview = await createMovieReviewMock(app, {
+        title: 'any_title',
+        notes: 'any_notes',
+        released: '2025-01-01',
+        imdbRating: 10,
+        genres: 'any_genres',
+      });
+
+      const movieReviewToUpdate = await createMovieReviewMock(app, {
+        title: 'another_title',
+        notes: 'any_notes',
+        released: '2025-01-01',
+        imdbRating: 10,
+        genres: 'any_genres',
+      });
+
+      const dto: UpdateMovieReviewDto = {
+        title: movieReview.title,
+      };
+
+      const response = await request(app.getHttpServer())
+        .patch(`/movie-reviews/${movieReviewToUpdate.id}`)
+        .send(dto);
+
+      expect(response.status).toBe(HttpStatus.CONFLICT);
+      expect(response.body).toEqual({
+        statusCode: HttpStatus.CONFLICT,
+        message: 'A movie review with this title already exists',
+        error: 'Conflict',
+      });
+    });
+
+    it('should update a movie review with duplicate title if it is the same', async () => {
+      const movieReview = await createMovieReviewMock(app, {
+        title: 'any_title',
+        notes: 'any_notes',
+        released: '2025-01-01',
+        imdbRating: 10,
+        genres: 'any_genres',
+      });
+
+      const dto: UpdateMovieReviewDto = {
+        title: movieReview.title,
+      };
+
+      const response = await request(app.getHttpServer())
+        .patch(`/movie-reviews/${movieReview.id}`)
+        .send(dto);
+
+      expect(response.status).toBe(HttpStatus.OK);
+      expect(response.body).toMatchObject({
+        id: movieReview.id,
+        title: dto.title,
+        notes: movieReview.notes,
+        released: movieReview.released,
+        imdbRating: movieReview.imdbRating,
+        genres: movieReview.genres,
+      });
+    });
+
+    it(`should validate update movie review fields`, async () => {
+      const movieReview = await createMovieReviewMock(app, {
+        title: 'any_title',
+        notes: 'any_notes',
+        released: '2025-01-01',
+        imdbRating: 10,
+        genres: 'any_genres',
+      });
+
+      let dto: UpdateMovieReviewDto = {
+        title: ``,
+      };
+
+      let response = await request(app.getHttpServer())
+        .patch(`/movie-reviews/${movieReview.id}`)
+        .send(dto);
+
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      expect(response.body).toEqual({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: ['title must be longer than or equal to 3 characters'],
+        error: 'Bad Request',
+      });
+
+      dto = {
+        notes: '',
+      };
+
+      response = await request(app.getHttpServer())
+        .patch(`/movie-reviews/${movieReview.id}`)
+        .send(dto);
+
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      expect(response.body).toEqual({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: ['notes must be longer than or equal to 3 characters'],
+        error: 'Bad Request',
+      });
+
+      dto = {
+        released: '01-01-2025',
+      };
+
+      response = await request(app.getHttpServer())
+        .patch(`/movie-reviews/${movieReview.id}`)
+        .send(dto);
+
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      expect(response.body).toEqual({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: ['Please provide only date like 2024-01-01'],
+        error: 'Bad Request',
+      });
+
+      dto = {
+        imdbRating: -1,
+      };
+
+      response = await request(app.getHttpServer())
+        .patch(`/movie-reviews/${movieReview.id}`)
+        .send(dto);
+
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      expect(response.body).toEqual({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: ['imdbRating must not be less than 0'],
+        error: 'Bad Request',
+      });
+
+      dto = {
+        imdbRating: 11,
+      };
+
+      response = await request(app.getHttpServer())
+        .patch(`/movie-reviews/${movieReview.id}`)
+        .send(dto);
+
+      expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+      expect(response.body).toEqual({
+        statusCode: HttpStatus.BAD_REQUEST,
+        message: ['imdbRating must not be greater than 10'],
+        error: 'Bad Request',
       });
     });
   });

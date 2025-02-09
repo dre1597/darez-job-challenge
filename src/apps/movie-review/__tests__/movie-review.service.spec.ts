@@ -2,6 +2,7 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { OmdbService } from '../../omdb/omdb.service';
 import { FilterMovieReviewDto } from '../dto/filter-movie-review.dto';
+import { UpdateMovieReviewDto } from '../dto/update-movie-review.dto';
 import { MovieReviewService } from '../movie-review.service';
 import { MovieReviewRepository } from '../repositories/movie-review.repository';
 import {
@@ -87,6 +88,27 @@ describe('MovieReviewService', () => {
 
     it('should not find a movie review if not found', async () => {
       await expect(service.findOne(1)).rejects.toThrow(
+        new NotFoundException('Movie review not found'),
+      );
+    });
+  });
+
+  describe('update', () => {
+    it('should update a movie review', async () => {
+      jest
+        .spyOn(repository, 'findOne')
+        .mockReturnValueOnce(Promise.resolve(defaultReturn));
+
+      const dto: UpdateMovieReviewDto = {
+        title: 'updated_title',
+        notes: 'updated_notes',
+      };
+      expect(await service.update(1, dto)).toEqual(defaultReturn);
+    });
+
+    it('should not update a movie review if not found', async () => {
+      const dto: UpdateMovieReviewDto = {};
+      await expect(service.update(1, dto)).rejects.toThrow(
         new NotFoundException('Movie review not found'),
       );
     });
